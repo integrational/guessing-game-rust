@@ -15,12 +15,14 @@ fn main() {
         min, max
     );
 
+    let mut num_guesses = 0;
     loop {
         println!("Your guess:");
         let guess = match get_guess() {
             Ok(n) => n,
             Err(_) => continue,
         };
+        num_guesses += 1;
 
         match secret.cmp(&guess) {
             Less => println!("Guess less."),
@@ -31,6 +33,13 @@ fn main() {
             }
         }
     }
+
+    let num_numbers = max - min + 1;
+    let success_rate = 100 * (num_numbers - num_guesses) / (num_numbers - 1);
+    println!(
+        "You required {} guesses to find the secret number out of a pool of {} candidates, for a success rate of {}%",
+        num_guesses, num_numbers, success_rate
+    )
 }
 
 fn gen_secret(min: i32, max: i32) -> i32 {
