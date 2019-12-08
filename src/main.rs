@@ -18,38 +18,48 @@ fn main() {
     let mut num_guesses = 0;
     loop {
         println!("Your guess:");
-        let guess = match get_guess() {
+        let guess = match read_guess() {
             Ok(n) => n,
             Err(_) => continue,
         };
         num_guesses += 1;
 
-        match secret.cmp(&guess) {
-            Less => println!("Guess less."),
-            Greater => println!("Guess greater."),
-            Equal => {
-                println!("Correct!");
-                break;
-            }
+        if eval_guess(secret, &guess) {
+            break;
         }
     }
 
     let num_numbers = max - min + 1;
     let success_rate = 100 * (num_numbers - num_guesses) / (num_numbers - 1);
     println!(
-        "You required {} guesses to find the secret number out of a pool of {} candidates, for a success rate of {}%",
+        "You required {} guesses to find the secret number among {} candidates, for a success rate of {}%.",
         num_guesses, num_numbers, success_rate
     )
 }
 
 fn gen_secret(min: i32, max: i32) -> i32 {
-    let secret: i32 = thread_rng().gen_range(min, max + 1);
-    secret
+    return thread_rng().gen_range(min, max + 1);
 }
 
-fn get_guess() -> Result<i32, <i32 as FromStr>::Err> {
+fn read_guess() -> Result<i32, <i32 as FromStr>::Err> {
     let mut guess = String::new();
     stdin().read_line(&mut guess).expect("Error reading line!");
-    let guess = guess.trim().parse();
-    guess
+    return guess.trim().parse();
+}
+
+fn eval_guess(secret: i32, guess: &i32) -> bool {
+    return match secret.cmp(&guess) {
+        Less => {
+            println!("Guess less.");
+            false
+        }
+        Greater => {
+            println!("Guess greater.");
+            false
+        }
+        Equal => {
+            println!("Correct!");
+            true
+        }
+    };
 }
