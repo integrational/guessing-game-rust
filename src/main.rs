@@ -17,7 +17,6 @@ fn main() {
     let mut num_guesses = 0;
     let mut correct_guess = false;
     while !correct_guess {
-        println!("Your guess:");
         let guess = read_guess();
         num_guesses += 1;
         correct_guess = eval_guess(secret, guess);
@@ -36,6 +35,7 @@ fn gen_secret(min: i32, max: i32) -> i32 {
 }
 
 fn read_guess() -> i32 {
+    println!("Your guess:");
     let mut guess = String::new();
     stdin().read_line(&mut guess).expect("Error reading line!");
     match guess.trim().parse() {
