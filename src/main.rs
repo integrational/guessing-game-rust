@@ -1,6 +1,5 @@
 use std::cmp::Ordering::{Equal, Greater, Less};
 use std::io::stdin;
-use std::str::FromStr;
 
 use rand::{thread_rng, Rng};
 
@@ -16,17 +15,12 @@ fn main() {
     );
 
     let mut num_guesses = 0;
-    loop {
+    let mut correct_guess = false;
+    while !correct_guess {
         println!("Your guess:");
-        let guess = match read_guess() {
-            Ok(n) => n,
-            Err(_) => continue,
-        };
+        let guess = read_guess();
         num_guesses += 1;
-
-        if eval_guess(secret, &guess) {
-            break;
-        }
+        correct_guess = eval_guess(secret, guess);
     }
 
     let num_numbers = max - min + 1;
@@ -38,17 +32,20 @@ fn main() {
 }
 
 fn gen_secret(min: i32, max: i32) -> i32 {
-    return thread_rng().gen_range(min, max + 1);
+    thread_rng().gen_range(min, max + 1)
 }
 
-fn read_guess() -> Result<i32, <i32 as FromStr>::Err> {
+fn read_guess() -> i32 {
     let mut guess = String::new();
     stdin().read_line(&mut guess).expect("Error reading line!");
-    return guess.trim().parse();
+    match guess.trim().parse() {
+        Ok(n) => n,
+        Err(_) => read_guess(),
+    }
 }
 
-fn eval_guess(secret: i32, guess: &i32) -> bool {
-    return match secret.cmp(&guess) {
+fn eval_guess(secret: i32, guess: i32) -> bool {
+    match secret.cmp(&guess) {
         Less => {
             println!("Guess less.");
             false
@@ -61,5 +58,5 @@ fn eval_guess(secret: i32, guess: &i32) -> bool {
             println!("Correct!");
             true
         }
-    };
+    }
 }
